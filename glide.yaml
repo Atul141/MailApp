@@ -1,0 +1,8 @@
+package: git.mailbox.com/mailbox
+import:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+- package: github.com/gorilla/handlers
+- package: github.com/gorilla/mux
+- package: github.com/codegangsta/negroni

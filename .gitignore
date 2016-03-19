@@ -1,0 +1,7 @@
+_workspace
+*.exe
+*.log
+out/*
+pkg/*
+vendor/
+.idea/
