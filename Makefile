@@ -2,6 +2,7 @@
 #
 ENV_MIN_COVERAGE = 62
 
+conf_file := default.conf
 mailbox_root := $(shell pwd | grep -o .*/git\.mailbox\.com)
 
 # Prologue
@@ -230,8 +231,15 @@ quick: info compile test
 .PHONY: build
 build: info clean compile check test
 
+# copy default conf to build dir
+.PHONY: copyconf
+copyconf:
+	@cp $(conf_file) $(out_build_path)
+
 # all
 all:
 	@$(MAKE) -rpn  : 2>/dev/null | grep '^.PHONY' | cut -d' ' -f2- | xargs -n 1 echo | sort
 
 .DEFAULT_GOAL: all
+
+
