@@ -10,27 +10,30 @@ import (
 	"github.com/codegangsta/negroni"
 )
 
-var (
+var configFilePath *string
+
+func init() {
 	configFilePath = flag.String("config", "default.conf", "Full path to application config file")
-	appName        = "mainbox-service"
-)
+}
 
 func main() {
 	flag.Parse()
-	appconfig, err := config.ReadApplicationConfig(*configFilePath)
+
+	config, err := config.ReadConfig(*configFilePath)
 	if err != nil {
-		log.Fatalf("Error occured while reading file: %v", err)
+		log.Fatalf("error occured while reading file: %s", err)
 	}
 
-	if err := appconfig.Validate(); err != nil {
-		log.Fatalf("Config validation failure: %v", err)
+	if err := config.Validate(); err != nil {
+		log.Fatalf("error in validating config file: %s", err)
 	}
+
 	router := h.Router()
 
 	n := negroni.New()
 	n.UseHandler(router)
 
-	appPort := appconfig.GetServerPort()
+	appPort := config.GetServerPort()
 	log.Printf("Starting service on http://localhost%s", appPort)
 	n.Run(appPort)
 }
