@@ -6,3 +6,4 @@ import:
 - package: github.com/gorilla/handlers
 - package: github.com/gorilla/mux
 - package: github.com/codegangsta/negroni
+- package: github.com/go-swagger/go-swagger

@@ -1,0 +1,175 @@
+swagger: '2.0'
+info:
+  title: Mail App API
+  version: "1.0.0"
+# the domain of the service
+host: mail.app
+# array of all schemes that your API supports
+schemes:
+  - http
+  - https
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /users/search:
+    get:
+      summary: An api to search user by name
+      tags:
+        - User
+      parameters:
+        - name: name
+          in: query
+          description: search token
+          required: true
+          type: string
+      responses:
+        200:
+          description: An array of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /dealers:
+    get:
+      summary: Get all dealers
+      tags:
+        - Dealer
+      responses:
+        200:
+          description: An array of dealers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Dealer'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /parcels:
+    post:
+      summary: Create a new parcel entry
+      tags:
+        - Parcel
+      parameters:
+        - name: dealer_id
+          in: formData
+          description: Dealer of parcel
+          required: true
+          type: string
+        - name: owner_id
+          in: formData
+          description: ID of parcel's owner
+          required: true
+          type: string
+        - name: comments
+          in: formData
+          description: any descriptions or comments regarding parcel
+          required: true
+          type: string
+      responses:
+        200:
+          description: Parcel Created. 
+          schema:
+            $ref: '#/definitions/Parcel'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /parcels/open:
+    get:
+      summary: Get all parcels with status open
+      tags:
+        - Parcel
+      responses:
+        200:
+          description: Array of all parcels with status open 
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Parcel'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /parcels/closed:
+    get:
+      summary: Get all parcels with status closed.
+      tags:
+        - Parcel
+      responses:
+        200:
+          description: Array of all parcels with status closed.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Parcel'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  User:
+    type: object
+    required: ["emp_id","email"]
+    properties:
+      emp_id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+        description: User's personal/official email address
+      phone_no:
+        type: string
+        description: User's personal/official phone number
+  Dealer:
+    type: object
+    required: ["dealer_name"]
+    properties:
+      dealer_id:
+        type: string
+      dealer_name:
+        type: string
+      dealer_icon:
+        type: string
+        format: uri
+  Parcel:
+    type: object
+    required: ["registration_no","dealer","owner","status","recieved_date"]
+    properties:
+      registration_no:
+        type: string
+      dealer:
+        type: object
+        $ref: '#/definitions/Dealer'
+      owner:
+        type: object
+        $ref: '#/definitions/User'
+      reciever:
+        type: object
+        $ref: '#/definitions/User'
+      status:
+        type: string
+      recieved_date:
+        type: string
+        format: date-time
+      pickup_date:
+        type: string
+        format: date-time
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
