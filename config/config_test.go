@@ -30,6 +30,7 @@ func TestReadConfigReadSuccessfullyFromConfigFile(t *testing.T) {
 	config := u.Config{
 		ServerPort:   "8080",
 		LogDirectory: "logs",
+		DbConnString: "actual-db-conn-string",
 	}
 
 	configFile := path.Join(os.TempDir(), "/default.conf")
@@ -41,6 +42,7 @@ func TestReadConfigReadSuccessfullyFromConfigFile(t *testing.T) {
 	assert.NoError(t, err, "error when reading config")
 	assert.Equal(t, "8080", actualConfig.ServerPort)
 	assert.Equal(t, "logs", actualConfig.LogDirectory)
+	assert.Equal(t, "actual-db-conn-string", actualConfig.DbConnString)
 
 	removeConfigFile(t, configFile)
 }
@@ -98,9 +100,19 @@ func TestInvalidServerPort(t *testing.T) {
 	assert.Equal(t, "Config: Invalid ServerPort", err.Error())
 }
 
-func TestGetServerport(t *testing.T) {
+func TestEmptyDbConnString(t *testing.T) {
 	config := u.Config{
 		ServerPort: "8080",
+	}
+	err := config.Validate()
+	require.Error(t, err, "Expected error in config validation")
+	assert.Equal(t, "Config: DbConnString must not be empty", err.Error())
+}
+
+func TestGetServerport(t *testing.T) {
+	config := u.Config{
+		ServerPort:   "8080",
+		DbConnString: "some-conn-string-value",
 	}
 
 	err := config.Validate()

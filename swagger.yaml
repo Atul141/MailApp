@@ -3,13 +3,11 @@ info:
   title: Mail App API
   version: "1.0.0"
 # the domain of the service
-host: mail.app
+host: localhost:8083
 # array of all schemes that your API supports
 schemes:
   - http
   - https
-# will be prefixed to all paths
-basePath: /v1
 produces:
   - application/json
 paths:
@@ -133,11 +131,11 @@ definitions:
     type: object
     required: ["dealer_name"]
     properties:
-      dealer_id:
+      id:
         type: string
-      dealer_name:
+      name:
         type: string
-      dealer_icon:
+      icon:
         type: string
         format: uri
   Parcel:
