@@ -101,7 +101,7 @@ info:
 .PHONY: setup
 setup:
 	go get -v github.com/golang/lint/golint
-	go get -v github.com/Masterminds/glide
+	./setup_glide.sh
 
 .PHONY: glide.update
 glide.update:
