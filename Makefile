@@ -87,6 +87,9 @@ top_package_test_reports = $(top_package_names:%=$(out_test_path)/%.func.txt)
 all_test_report = $(out_test_path)/all.func.txt
 all_test_report_html = $(out_test_path)/all.func.html
 minimum_coverage_percent := $(ENV_MIN_COVERAGE)
+db_create_script_path := "./db/db_create.sql"
+db_destroy_script_path := "./db/db_destroy.sql"
+db_seed_script_path := "./db/db_seed.sql"
 
 .PHONY: info
 info:
@@ -189,6 +192,46 @@ fmt:
 			echo 'gofmt failed!'; \
 			exit 1; \
 		fi
+
+# Database
+.PHONY: db.create
+db.create:
+	@if [[ -d "db" ]]; then \
+		echo "Creating database"; \
+		psql -f $(db_create_script_path); \
+	fi
+
+.PHONY: db.migrate
+db.migrate:
+	@if [[ -d "db" ]]; then \
+		echo "Migrating database"; \
+		goose up; \
+	fi
+
+.PHONY: db.rollback
+db.rollback:
+	@if [[ -d "db" ]]; then \
+		echo "Rolling back database"; \
+		goose down; \
+	fi
+
+
+.PHONY: db.seed
+db.seed:
+	@if [[ -d "db" ]]; then \
+		echo "Seeding database"; \
+		psql -f $(db_seed_script_path); \
+	fi
+
+.PHONY: db.destroy
+db.destroy:
+	@if [[ -d "db" ]]; then \
+		echo "Destroying database"; \
+		psql -f $(db_destroy_script_path); \
+	fi
+
+.PHONY: db.reset
+db.reset: db.destroy db.create db.migrate db.seed
 
 # Fix code format and style
 # NOT TO BE RUN ON BUILD
