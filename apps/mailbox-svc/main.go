@@ -6,6 +6,7 @@ import (
 
 	"git.mailbox.com/mailbox/config"
 	h "git.mailbox.com/mailbox/handlers"
+	m "git.mailbox.com/mailbox/models"
 
 	"github.com/codegangsta/negroni"
 )
@@ -28,8 +29,13 @@ func main() {
 		log.Fatalf("error in validating config file: %s", err)
 	}
 
-	router := h.Router()
-	
+	db, err := m.NewDatabase(config.DbConnString)
+	if err != nil {
+		log.Fatalf("fail to connect to database: %s", err)
+	}
+	defer db.Close()
+
+	router := h.Router(db)
 	n := negroni.New()
 	n.UseHandler(router)
 

@@ -12,6 +12,7 @@ import (
 type Config struct {
 	ServerPort   string `json:"serverPort"`
 	LogDirectory string `json:"logDirectory"`
+	DbConnString string `json:"dbConnString"`
 }
 
 //ReadConfig unmarshalles config file to Config ̰
@@ -54,6 +55,10 @@ func (config *Config) Validate() error {
 
 	if serverPort <= 0 {
 		return fmt.Errorf("Config: Invalid ServerPort")
+	}
+
+	if len(config.DbConnString) == 0 {
+		return fmt.Errorf("Config: DbConnString must not be empty")
 	}
 	return nil
 }
