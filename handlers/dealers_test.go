@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+    "fmt"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"fmt"
 
+	tu "git.mailbox.com/mailbox/testutils"
 	m "git.mailbox.com/mailbox/models"
 	u "git.mailbox.com/mailbox/utils"
 )
@@ -32,7 +32,7 @@ func TestGetDealersSuccess(t *testing.T) {
 	require.NoError(t, err, "failed to create a request: dealers")
 	w := httptest.NewRecorder()
 
-	mockDbObj := new(MockDB)
+	mockDbObj := new(tu.MockDB)
 	mockDbObj.On("GetDealers").Return(dealers, nil)
 
 	dealersHandler(mockDbObj)(w, r)
@@ -55,7 +55,7 @@ func TestGetDealersDBError(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	expectedErrorMessage := "some-db-specific-error"
-	mockDbObj := new(MockDB)
+	mockDbObj := new(tu.MockDB)
 	mockDbObj.On("GetDealers").Return(nil, fmt.Errorf(expectedErrorMessage))
 
 	dealersHandler(mockDbObj)(w, r)
@@ -72,14 +72,3 @@ func TestGetDealersDBError(t *testing.T) {
 	mockDbObj.AssertExpectations(t)
 }
 
-type MockDB struct {
-	mock.Mock
-}
-
-func (db *MockDB) GetDealers() ([]*m.Dealer, error) {
-	args := db.Called()
-	if args.Get(0) != nil {
-		return args.Get(0).([]*m.Dealer), nil
-	}
-	return nil, args.Error(1)
-}

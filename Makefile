@@ -1,6 +1,6 @@
 # Please refer to http://clarkgrubb.com/makefile-style-guide
 #
-ENV_MIN_COVERAGE = 82
+ENV_MIN_COVERAGE = 76
 
 conf_file := default.conf
 mailbox_root := $(shell pwd | grep -o .*/git\.mailbox\.com)

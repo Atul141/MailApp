@@ -7,6 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const getAllDealersQuery = "select id, name, icon from dealers;"
+
 type DB interface {
 	GetDealers() ([]*Dealer, error)
 }
@@ -30,8 +32,7 @@ func (db *Database) Close() {
 
 func (db *Database) GetDealers() ([]*Dealer, error) {
 	var dealers []*Dealer
-	sql := "SELECT id,name,icon FROM dealers;"
-	err := db.connection.Select(&dealers, sql)
+	err := db.connection.Select(&dealers, getAllDealersQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
 	}
