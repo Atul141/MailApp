@@ -17,3 +17,11 @@ func (db *MockDB) GetDealers() ([]*m.Dealer, error) {
 	}
 	return nil, args.Error(1)
 }
+
+func (db *MockDB) GetUsersWith(searchParam string) ([]*m.User, error) {
+	args := db.Called(searchParam)
+	if args.Get(0) != nil {
+		return args.Get(0).([]*m.User), nil
+	}
+	return nil, args.Error(1)
+}

@@ -102,6 +102,7 @@ info:
 setup:
 	go get -v github.com/golang/lint/golint
 	./setup_glide.sh
+	go get bitbucket.org/liamstask/goose/cmd/goose
 
 .PHONY: glide.update
 glide.update:

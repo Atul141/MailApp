@@ -20,21 +20,21 @@ type User struct {
 
 	Required: true
 	*/
-	Email strfmt.Email `json:"email"`
+	Email strfmt.Email `db:"email" json:"email"`
 
 	/* emp id
 
 	Required: true
 	*/
-	EmpID string `json:"emp_id"`
+	EmpID string `db:"emp_id" json:"emp_id"`
 
 	/* name
 	 */
-	Name *string `json:"name,omitempty"`
+	Name *string `db:"name" json:"name,omitempty"`
 
 	/* User's personal/official phone number
 	 */
-	PhoneNo *string `json:"phone_no,omitempty"`
+	PhoneNo *string `db:"phone_no" json:"phone_no,omitempty"`
 }
 
 // Validate validates this user

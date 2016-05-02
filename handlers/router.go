@@ -13,7 +13,7 @@ func Router(db m.DB) http.Handler {
 
 	r := mux.NewRouter()
 	r.Handle("/", fileHandler("public/index.html")).Methods("GET")
-	r.Handle("/users/search", userSearchHandler()).Methods("GET")
+	r.Handle("/users/search", userSearchHandler(db)).Methods("GET")
 	r.Handle("/dealers", dealersHandler(db)).Methods("GET")
 	r.Handle("/parcels/{status}", parcelSearchHandler()).Methods("GET")
 

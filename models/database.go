@@ -11,6 +11,7 @@ const getAllDealersQuery = "select id, name, icon from dealers;"
 
 type DB interface {
 	GetDealers() ([]*Dealer, error)
+	GetUsersWith(string) ([]*User, error)
 }
 
 type Database struct {
@@ -37,4 +38,14 @@ func (db *Database) GetDealers() ([]*Dealer, error) {
 		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
 	}
 	return dealers, err
+}
+
+func (db *Database) GetUsersWith(searchParam string) ([]*User, error) {
+	var users []*User
+	searchUsersQuery := `select email, name, emp_id, phone_no from users where name ~* $1 or email ~* $1 or phone_no ~* $1`
+	err := db.connection.Select(&users, searchUsersQuery, searchParam)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch users: %s", err)
+	}
+	return users, err
 }

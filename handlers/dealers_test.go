@@ -38,6 +38,7 @@ func TestGetDealersSuccess(t *testing.T) {
 
 	var actualDealers []*m.Dealer
 	err = json.Unmarshal(w.Body.Bytes(), &actualDealers)
+	require.NoError(t, err, "failed to unmarshal the response")
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, *dealers[0].ID, *actualDealers[0].ID)
@@ -61,6 +62,7 @@ func TestGetDealersDBError(t *testing.T) {
 
 	var actualError *m.Error
 	err = json.Unmarshal(w.Body.Bytes(), &actualError)
+	require.NoError(t, err, "failed to unmarshal the response")
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	require.NotNil(t, actualError)
