@@ -1,7 +1,7 @@
 package testutils
 
-import(
-  "github.com/stretchr/testify/mock"
+import (
+	"github.com/stretchr/testify/mock"
 
 	m "git.mailbox.com/mailbox/models"
 )

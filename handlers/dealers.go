@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 
 	m "git.mailbox.com/mailbox/models"
 	u "git.mailbox.com/mailbox/utils"
@@ -21,25 +21,25 @@ func dealersHandler(db m.DB) http.HandlerFunc {
 				Message: u.SPtr("Internal server error"),
 			}
 			marshalledError, err := json.Marshal(errResponse)
-            if err != nil {
-              log.Printf("failed to marshal the error response: %s", err)
-              http.Error(w, "something went wrong", http.StatusInternalServerError)
-            }
+			if err != nil {
+				log.Printf("failed to marshal the error response: %s", err)
+				http.Error(w, "something went wrong", http.StatusInternalServerError)
+			}
 			http.Error(w, string(marshalledError), http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 
-        // TODO: Too relaxed: make it strict
+		// TODO: Too relaxed: make it strict
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
 
 		marshalledRes, err := json.Marshal(dealers)
-        if err != nil {
-          log.Printf("failed to marshal the success response: %s", err)
-          http.Error(w, "something went wrong", http.StatusInternalServerError)
-        }
+		if err != nil {
+			log.Printf("failed to marshal the success response: %s", err)
+			http.Error(w, "something went wrong", http.StatusInternalServerError)
+		}
 
 		fmt.Fprintf(w, string(marshalledRes))
 	}

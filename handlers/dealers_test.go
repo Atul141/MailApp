@@ -2,17 +2,16 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-    "fmt"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-
-	tu "git.mailbox.com/mailbox/testutils"
 	m "git.mailbox.com/mailbox/models"
+	tu "git.mailbox.com/mailbox/testutils"
 	u "git.mailbox.com/mailbox/utils"
 )
 
@@ -71,4 +70,3 @@ func TestGetDealersDBError(t *testing.T) {
 
 	mockDbObj.AssertExpectations(t)
 }
-
