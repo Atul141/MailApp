@@ -52,6 +52,10 @@ paths:
   /parcels:
     post:
       summary: Create a new parcel entry
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
       tags:
         - Parcel
       parameters:
@@ -67,7 +71,7 @@ paths:
           type: string
         - name: comments
           in: formData
-          description: any descriptions or comments regarding parcel
+          description: Comments regarding received parcel
           required: true
           type: string
       responses:
@@ -75,6 +79,14 @@ paths:
           description: Parcel Created. 
           schema:
             $ref: '#/definitions/Parcel'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Dealer/Owner not found
+          schema:
+            $ref: '#/definitions/Error'
         default:
           description: Unexpected error
           schema:
@@ -116,6 +128,8 @@ definitions:
     type: object
     required: ["emp_id","email"]
     properties:
+      id:
+        type: string
       emp_id:
         type: string
       name:
@@ -140,9 +154,9 @@ definitions:
         format: uri
   Parcel:
     type: object
-    required: ["registration_no","dealer","owner","status","recieved_date"]
+    required: ["id","dealer","owner","status","recieved_date"]
     properties:
-      registration_no:
+      id:
         type: string
       dealer:
         type: object
@@ -154,13 +168,11 @@ definitions:
         type: object
         $ref: '#/definitions/User'
       status:
-        type: string
+        type: boolean
       recieved_date:
         type: string
-        format: date-time
       pickup_date:
         type: string
-        format: date-time
   Error:
     type: object
     properties:

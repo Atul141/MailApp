@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
+	"time"
 )
 
 /*Parcel parcel
@@ -20,7 +21,7 @@ type Parcel struct {
 
 	Required: true
 	*/
-	DealerID *string `db:"dealer_id"`
+	DealerID *string `db:"dealer_id" json:"-"`
 
 	/* dealer
 
@@ -32,7 +33,7 @@ type Parcel struct {
 
 	Required: true
 	*/
-	OwnerID *string `db:"owner_id"`
+	OwnerID *string `db:"owner_id" json:"-"`
 	/* owner
 
 	Required: true
@@ -41,17 +42,17 @@ type Parcel struct {
 
 	/* pickup date
 	 */
-	PickupDate *strfmt.DateTime `json:"pickup_date,omitempty"`
+	PickupDate time.Time `json:"pickup_date,omitempty"`
 
 	/* recieved date
 
 	Required: true
 	*/
-	RecievedDate strfmt.DateTime `json:"recieved_date"`
+	RecievedDate time.Time `db:"received_date" json:"recieved_date"`
 
 	/* reciever
 	 */
-	RecieverID *string `db:"reciever_id"`
+	RecieverID *string `db:"receiver_id" json:"-"`
 	/* reciever
 	 */
 	Reciever *User `json:"reciever,omitempty"`
@@ -60,13 +61,15 @@ type Parcel struct {
 
 	Required: true
 	*/
-	RegistrationNo string `json:"registration_no"`
+	ID string `db:"id" json:"id"`
 
 	/* status
 
 	Required: true
 	*/
-	Status string `json:"status"`
+	Status bool `db:"status" json:"status"`
+	
+	CreatedOn time.Time `db:"created_on" json:"-"`
 }
 
 // Validate validates this parcel
@@ -78,17 +81,12 @@ func (m *Parcel) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateID(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
 	if err := m.validateOwner(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validateRecievedDate(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validateRegistrationNo(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -116,6 +114,15 @@ func (m *Parcel) validateDealer(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Parcel) validateID(formats strfmt.Registry) error {
+
+	if err := validate.RequiredString("id", "body", string(m.ID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Parcel) validateOwner(formats strfmt.Registry) error {
 
 	if m.Owner != nil {
@@ -128,29 +135,12 @@ func (m *Parcel) validateOwner(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Parcel) validateRecievedDate(formats strfmt.Registry) error {
-
-	if err := validate.Required("recieved_date", "body", strfmt.DateTime(m.RecievedDate)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *Parcel) validateRegistrationNo(formats strfmt.Registry) error {
-
-	if err := validate.RequiredString("registration_no", "body", string(m.RegistrationNo)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *Parcel) validateStatus(formats strfmt.Registry) error {
 
-	if err := validate.RequiredString("status", "body", string(m.Status)); err != nil {
+	if err := validate.Required("status", "body", bool(m.Status)); err != nil {
 		return err
 	}
 
 	return nil
 }
+

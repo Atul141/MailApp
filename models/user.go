@@ -16,6 +16,10 @@ swagger:model User
 */
 type User struct {
 
+	/* id
+	 */
+	ID *string `db:"id" json:"id,omitempty"`
+	
 	/* User's personal/official email address
 
 	Required: true
