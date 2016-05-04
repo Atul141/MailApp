@@ -31,10 +31,6 @@ func dealersHandler(db m.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		// TODO: Too relaxed: make it strict
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-
 		marshalledRes, err := json.Marshal(dealers)
 		if err != nil {
 			log.Printf("failed to marshal the success response: %s", err)

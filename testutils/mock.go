@@ -25,3 +25,18 @@ func (db *MockDB) GetUsersWith(searchParam string) ([]*m.User, error) {
 	}
 	return nil, args.Error(1)
 }
+
+func (db *MockDB) GetUserByID(id string) (*m.User, error) {
+	args := db.Called(id)
+	if args.Get(0) != nil {
+		return args.Get(0).(*m.User), nil
+	}
+	return nil, args.Error(1)
+}
+func (db *MockDB) GetDealerByID(id string) (*m.Dealer, error) {
+	args := db.Called(id)
+	if args.Get(0) != nil {
+		return args.Get(0).(*m.Dealer), nil
+	}
+	return nil, args.Error(1)
+}

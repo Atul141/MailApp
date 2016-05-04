@@ -20,8 +20,19 @@ type Parcel struct {
 
 	Required: true
 	*/
+	DealerID *string `db:"dealer_id"`
+
+	/* dealer
+
+	Required: true
+	*/
 	Dealer *Dealer `json:"dealer"`
 
+	/* owner
+
+	Required: true
+	*/
+	OwnerID *string `db:"owner_id"`
 	/* owner
 
 	Required: true
@@ -38,6 +49,9 @@ type Parcel struct {
 	*/
 	RecievedDate strfmt.DateTime `json:"recieved_date"`
 
+	/* reciever
+	 */
+	RecieverID *string `db:"reciever_id"`
 	/* reciever
 	 */
 	Reciever *User `json:"reciever,omitempty"`
