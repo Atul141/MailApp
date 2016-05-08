@@ -50,17 +50,17 @@ func parcelCreateHandler(db m.DB) http.HandlerFunc {
 			databaseError(w, err)
 			return
 		}
-		
-		parcel,err:= db.CreateParcel(dealerID,ownerID, r.PostFormValue("comments"))
+
+		parcel, err := db.CreateParcel(dealerID, ownerID, r.PostFormValue("comments"))
 		if err != nil {
 			log.Printf("Error creating parcel: %s", err)
 			databaseError(w, err)
 			return
 		}
-		
-		parcel.Dealer= dealer
+
+		parcel.Dealer = dealer
 		parcel.Owner = owner
-		
+
 		w.Header().Set("Content-Type", "application/json")
 
 		marshalledRes, err := json.Marshal(parcel)
