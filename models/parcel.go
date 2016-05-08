@@ -68,7 +68,7 @@ type Parcel struct {
 	Required: true
 	*/
 	Status bool `db:"status" json:"status"`
-	
+
 	CreatedOn time.Time `db:"created_on" json:"-"`
 }
 
@@ -143,4 +143,3 @@ func (m *Parcel) validateStatus(formats strfmt.Registry) error {
 
 	return nil
 }
-

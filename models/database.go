@@ -3,11 +3,11 @@ package models
 import (
 	"fmt"
 
-	"github.com/satori/go.uuid"
+	u "git.mailbox.com/mailbox/utils"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/satori/go.uuid"
 	"time"
-	u "git.mailbox.com/mailbox/utils"
 )
 
 const getAllDealersQuery = `select id, name, icon from dealers;`
@@ -84,22 +84,22 @@ func (db *Database) GetParcelByID(id string) (*Parcel, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch parcel: %s", err)
 	}
-	return &parcel, err	
+	return &parcel, err
 }
-func (db *Database) CreateParcel(dealerID string, ownerID string, comments string) (*Parcel, error)  {
-	id:= uuid.NewV4().String()
-	parcel:= &Parcel{
-		ID: id,
-		DealerID: u.SPtr(dealerID),
-		OwnerID: u.SPtr(ownerID),
-		Status: true,
+func (db *Database) CreateParcel(dealerID string, ownerID string, comments string) (*Parcel, error) {
+	id := uuid.NewV4().String()
+	parcel := &Parcel{
+		ID:           id,
+		DealerID:     u.SPtr(dealerID),
+		OwnerID:      u.SPtr(ownerID),
+		Status:       true,
 		RecievedDate: time.Now().UTC(),
-		CreatedOn: time.Now().UTC(),
+		CreatedOn:    time.Now().UTC(),
 	}
-	query:= "INSERT INTO parcels (id,dealer_id,owner_id,status,received_date,created_on) VALUES (:id,:dealer_id,:owner_id,:status,:received_date,:created_on)"
-	
+	query := "INSERT INTO parcels (id,dealer_id,owner_id,status,received_date,created_on) VALUES (:id,:dealer_id,:owner_id,:status,:received_date,:created_on)"
+
 	tx := db.connection.MustBegin()
-	_, err:= tx.NamedExec(query, &parcel)
+	_, err := tx.NamedExec(query, &parcel)
 	if err != nil {
 		return nil, fmt.Errorf("Error inserting record: %s", err)
 	}
