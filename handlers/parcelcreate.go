@@ -56,23 +56,28 @@ type createParcelResponse struct {
 func parcelCreateHandler(db m.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Body == nil {
+			log.Printf("request body should not be empty")
+			http.Error(w, "request body is empty", http.StatusBadRequest)
 			return
 		}
 
 		respBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
+			log.Printf("failed to read the request body: %s", err)
+			http.Error(w, "request body error", http.StatusBadRequest)
 			return
 		}
 
 		cpr := &createParcelRequest{}
-		// Add tests and then implement
 		err = json.Unmarshal(respBody, cpr)
 		if err != nil {
+			log.Printf("failed to unmarshal the request body: %s", err)
+			http.Error(w, "request body parsing failed", http.StatusBadRequest)
 			return
 		}
 
 		if err := cpr.validate(); err != nil {
-			log.Printf("Error fetching dealer from DB: %s", err)
+			log.Printf("Error fetching dealer from DB: %#v", err)
 			badRequestError(w, err.Error())
 			return
 		}
