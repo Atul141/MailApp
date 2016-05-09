@@ -51,6 +51,7 @@ func TestParcelCreateSuccess(t *testing.T) {
 	parcelCreateHandler(mockDbObj)(w, r)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
 	assert.Equal(t, fmt.Sprintf(`{"id":"%s"}`, parcel.ID), w.Body.String())
 }
 
@@ -100,4 +101,52 @@ func TestParcelCreateValidationFail(t *testing.T) {
 
 	validationFailMessage := fmt.Sprintf(`{"code":%d,"message":"dealerId should not be empty\ndealerId should be a valid UUID V4 string\ndealerId should not be empty\ndealerId should be a valid UUID V4 string"}`, w.Code)
 	assert.Equal(t, fmt.Sprintf("%s\n", validationFailMessage), w.Body.String())
+}
+
+func TestParcelCreateGetDealerFail(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels",
+		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
+	require.NoError(t, err, "failed to create a request")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetDealerByID", "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28").Return(nil, fmt.Errorf("failed to get dealer with id"))
+	mockDbObj.On("GetUserByID", "23abce0a-ceb7-4127-8d98-b0bb5df4cce7").Return(user, nil)
+	mockDbObj.On("CreateParcel", *dealer.ID, *user.ID).Return(parcel, nil)
+
+	parcelCreateHandler(mockDbObj)(w, r)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestParcelCreateGetUserFail(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels",
+		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
+	require.NoError(t, err, "failed to create a request")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetDealerByID", "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28").Return(dealer, nil)
+	mockDbObj.On("GetUserByID", "23abce0a-ceb7-4127-8d98-b0bb5df4cce7").Return(nil, fmt.Errorf("failed to get user with id"))
+	mockDbObj.On("CreateParcel", *dealer.ID, *user.ID).Return(parcel, nil)
+
+	parcelCreateHandler(mockDbObj)(w, r)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestParcelCreateFail(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels",
+		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
+	require.NoError(t, err, "failed to create a request")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetDealerByID", "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28").Return(dealer, nil)
+	mockDbObj.On("GetUserByID", "23abce0a-ceb7-4127-8d98-b0bb5df4cce7").Return(user, nil)
+	mockDbObj.On("CreateParcel", *dealer.ID, *user.ID).Return(nil, fmt.Errorf("failed to create a parcel"))
+
+	parcelCreateHandler(mockDbObj)(w, r)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }

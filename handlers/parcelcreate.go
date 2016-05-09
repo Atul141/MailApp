@@ -77,7 +77,7 @@ func parcelCreateHandler(db m.DB) http.HandlerFunc {
 		}
 
 		if err := cpr.validate(); err != nil {
-			log.Printf("Error fetching dealer from DB: %#v", err)
+			log.Printf("Error fetching dealer from DB: %s", err.Error())
 			badRequestError(w, err.Error())
 			return
 		}
