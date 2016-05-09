@@ -1,5 +1,5 @@
-hash: 6c7d6b54851ce825834596b0c38f2d0518368e7521604e0afcca0ead94cf92b8
-updated: 2016-05-05T01:35:39.43593917+05:30
+hash: 02ab45cfcb67219c36c90afb9f00de5aa786458764100b3b647e1e81ecbdae3c
+updated: 2016-05-10T01:15:43.025881242+05:30
 imports:
 - name: bitbucket.org/pkg/inflect
   version: ""
@@ -10,13 +10,14 @@ imports:
 - name: github.com/codegangsta/inject
   version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
 - name: github.com/codegangsta/negroni
-  version: c7477ad8e330bef55bf1ebe300cf8aa67c492d1b
+  version: a2adb52ce9f055b63f8e1175d02ec706e064bd2a
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
   - spew
 - name: github.com/go-martini/martini
   version: 0c6ad5903d2bf9337762caa9c357247279c230c3
+  repo: https://github.com/go-martini/martini
 - name: github.com/go-openapi/analysis
   version: 5a8fe2138f95138797c306c07e65e759c55f898f
   repo: https://github.com/go-openapi/analysis
@@ -39,7 +40,7 @@ imports:
   version: 1f40fcb077ed32379da3eeb494f76fb2285e31b8
   repo: https://github.com/go-openapi/spec
 - name: github.com/go-openapi/strfmt
-  version: f827e8cf30538b3983710c9fb4dd76ea04e3c8e0
+  version: 66a99d45c3043d45d346b1c8db5dc2f76a004869
   repo: https://github.com/go-openapi/strfmt
 - name: github.com/go-openapi/swag
   version: 617a8d12ee0e06e17b3fc95af7a14dd0f514e636
@@ -48,18 +49,20 @@ imports:
   version: e6da236c48ce621803fc5d3883d8739aad0ce318
   repo: https://github.com/go-openapi/validate
 - name: github.com/go-swagger/go-swagger
-  version: be7002b80c96bf8bdcfbf3bf5451e50596028a68
+  version: 0583b253eabf1fcf78be407b0fea26f2f79c629f
 - name: github.com/go-swagger/scan-repo-boundary
   version: 196ec52cfa1c96b45dd793dfa0fa3f8877b299da
   repo: https://github.com/go-swagger/scan-repo-boundary
 - name: github.com/goji/param
   version: da86c81e3e3c23b1948bc7a003d381250a032aa7
+  repo: https://github.com/goji/param
 - name: github.com/gorilla/context
   version: 1ea25387ff6f684839d82767c1733ff4d4d15d0a
+  repo: https://github.com/gorilla/context
 - name: github.com/gorilla/handlers
   version: 66e6c6f01d8da976ee113437745ca029c2b585a6
 - name: github.com/gorilla/mux
-  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
+  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
 - name: github.com/jessevdk/go-flags
   version: 6b9493b3cb60367edd942144879646604089e3f7
   repo: https://github.com/jessevdk/go-flags
@@ -67,10 +70,12 @@ imports:
   version: 398dd5876282499cdfd4cb8ea0f31a672abe9495
 - name: github.com/justinas/alice
   version: 671ef6b31288a51b5517ba2f1349e781b91a4da3
+  repo: https://github.com/justinas/alice
 - name: github.com/lib/pq
   version: dd3290b2f71a8b30bee8e4e75a337a825263d26f
 - name: github.com/martini-contrib/render
   version: ec18f8345a1181146728238980606fb1d6f40e8c
+  repo: https://github.com/martini-contrib/render
 - name: github.com/naoina/denco
   version: 9af2ba0e24214bac003821f4a501b131b2e04c75
   repo: https://github.com/naoina/denco
@@ -79,6 +84,7 @@ imports:
   repo: https://github.com/opennota/urlesc
 - name: github.com/oxtoacart/bpool
   version: 4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6
+  repo: https://github.com/oxtoacart/bpool
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
@@ -90,6 +96,9 @@ imports:
   version: 3ca2b550f6a4333b63c845850f760a7d00412cd6
 - name: github.com/rs/xhandler
   version: d9d9599b6aaf6a058cb7b1f48291ded2cbd13390
+  repo: https://github.com/rs/xhandler
+- name: github.com/rshetty/multierror
+  version: d62ad4eeda03d0395891ccbb2062616723e2dc21
 - name: github.com/satori/go.uuid
   version: f9ab0dce87d815821e221626b772e3475a0d2749
 - name: github.com/stretchr/objx
@@ -104,9 +113,11 @@ imports:
   version: 9a3d4236b03bb5d26f7951134d248f9d5510d599
   repo: https://github.com/tylerb/graceful
 - name: github.com/zenazn/goji
-  version: 1925ec6302925f4760d7a11cc17036f44ec98d5b
+  version: 64eb34159fe53473206c2b3e70fe396a639452f2
+  repo: https://github.com/zenazn/goji
 - name: golang.org/x/crypto
-  version: 285fb2ed20d1dc450fc743a1b3ff7c36bef372b9
+  version: 47ff8dfbc528fea3003fc0ce2d88ffbbfbc46a43
+  repo: https://golang.org/x/crypto
 - name: golang.org/x/net
   version: fb93926129b8ec0056f2f458b1f519654814edf0
   repo: https://go.googlesource.com/net
@@ -115,6 +126,7 @@ imports:
   - netutil
 - name: golang.org/x/text
   version: bd1c9905f55d983c0cd0b15cf0c3e2fe860c8902
+  repo: https://golang.org/x/text
 - name: golang.org/x/tools
   version: 837ce23ea348dcb09182fe7a87437b76ec39107b
   repo: https://go.googlesource.com/tools

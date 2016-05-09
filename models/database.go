@@ -19,7 +19,7 @@ type DB interface {
 	GetUserByID(string) (*User, error)
 	GetDealerByID(id string) (*Dealer, error)
 	GetParcelByID(id string) (*Parcel, error)
-	CreateParcel(dealerID string, ownerID string, comments string) (*Parcel, error)
+	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
 }
 
 type Database struct {
@@ -79,14 +79,15 @@ func (db *Database) GetUserByID(id string) (*User, error) {
 
 func (db *Database) GetParcelByID(id string) (*Parcel, error) {
 	parcel := Parcel{}
-	query := `SELECT id, dealer_id, received_date, status,owner_id,receiver_id  FROM parcels WHERE id=$1`
+	query := `SELECT id, dealer_id, received_date, status, owner_id, receiver_id FROM parcels WHERE id=$1`
 	err := db.connection.Get(&parcel, query, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch parcel: %s", err)
 	}
 	return &parcel, err
 }
-func (db *Database) CreateParcel(dealerID string, ownerID string, comments string) (*Parcel, error) {
+
+func (db *Database) CreateParcel(dealerID string, ownerID string) (*Parcel, error) {
 	id := uuid.NewV4().String()
 	parcel := &Parcel{
 		ID:           id,
@@ -96,7 +97,7 @@ func (db *Database) CreateParcel(dealerID string, ownerID string, comments strin
 		RecievedDate: time.Now().UTC(),
 		CreatedOn:    time.Now().UTC(),
 	}
-	query := "INSERT INTO parcels (id,dealer_id,owner_id,status,received_date,created_on) VALUES (:id,:dealer_id,:owner_id,:status,:received_date,:created_on)"
+	query := "INSERT INTO parcels (id, dealer_id, owner_id, status, received_date, created_on) VALUES (:id, :dealer_id, :owner_id, :status, :received_date, :created_on)"
 
 	tx := db.connection.MustBegin()
 	_, err := tx.NamedExec(query, &parcel)

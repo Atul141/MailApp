@@ -2,58 +2,101 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
 
-	"fmt"
-
-	"strings"
+	me "github.com/rshetty/multierror"
 
 	m "git.mailbox.com/mailbox/models"
 	u "git.mailbox.com/mailbox/utils"
 )
 
+const UUIDRegex = "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[8|9|aA|bB][a-f0-9]{3}-[a-f0-9]{12}$"
+
+type createParcelRequest struct {
+	DealerID string `json:"dealerId"`
+	OwnerID  string `json:"ownerId"`
+}
+
+func (cpr *createParcelRequest) validate() *me.MultiError {
+	cprError := &me.MultiError{}
+
+	if len(cpr.DealerID) == 0 {
+		cprError.Push("dealerId should not be empty")
+	}
+
+	if !cpr.validUUIDV4(cpr.DealerID) {
+		cprError.Push("dealerId should be a valid UUID V4 string")
+	}
+
+	if len(cpr.OwnerID) == 0 {
+		cprError.Push("dealerId should not be empty")
+	}
+
+	if !cpr.validUUIDV4(cpr.OwnerID) {
+		cprError.Push("dealerId should be a valid UUID V4 string")
+	}
+
+	return cprError.HasError()
+}
+
+func (cpr *createParcelRequest) validUUIDV4(text string) bool {
+	r := regexp.MustCompile(UUIDRegex)
+	return r.MatchString(text)
+}
+
+type createParcelResponse struct {
+	ID string `json:"id"`
+}
+
 //parcelCreateHandler creates new parcel object
 func parcelCreateHandler(db m.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		dealerID := r.PostFormValue("dealer_id")
-		if !validateRequestParam(w, dealerID, "dealer_id") {
+		if r.Body == nil {
 			return
 		}
 
-		ownerID := r.PostFormValue("owner_id")
-		if !validateRequestParam(w, ownerID, "owner_id") {
-			return
-		}
-
-		dealer, err := db.GetDealerByID(dealerID)
+		respBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			if strings.Contains(err.Error(), "no rows in result set") {
-				log.Printf("Dealer with id `%s` not found.", dealerID)
-				notFoundError(w, "dealer_id")
-				return
-			}
+			return
+		}
+
+		cpr := &createParcelRequest{}
+		// Add tests and then implement
+		err = json.Unmarshal(respBody, cpr)
+		if err != nil {
+			return
+		}
+
+		if err := cpr.validate(); err != nil {
+			log.Printf("Error fetching dealer from DB: %s", err)
+			badRequestError(w, err.Error())
+			return
+		}
+
+		// Find the dealer by ID
+		dealer, err := db.GetDealerByID(cpr.DealerID)
+		if err != nil {
 			log.Printf("Error fetching dealer from DB: %s", err)
 			databaseError(w, err)
 			return
 		}
 
-		owner, err := db.GetUserByID(ownerID)
+		// Find the owner by ID
+		owner, err := db.GetUserByID(cpr.OwnerID)
 		if err != nil {
-			if strings.Contains(err.Error(), "no rows in result set") {
-				log.Printf("Owner with id `%s` not found.", dealerID)
-				notFoundError(w, "owner_id")
-				return
-			}
 			log.Printf("Error fetching owner from DB: %s", err)
 			databaseError(w, err)
 			return
 		}
 
-		parcel, err := db.CreateParcel(dealerID, ownerID, r.PostFormValue("comments"))
+		// Create a parcel with owner and dealer
+		parcel, err := db.CreateParcel(cpr.DealerID, cpr.OwnerID)
 		if err != nil {
-			log.Printf("Error creating parcel: %s", err)
+			log.Printf("Error creating a parcel: %s", err)
 			databaseError(w, err)
 			return
 		}
@@ -63,58 +106,34 @@ func parcelCreateHandler(db m.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		marshalledRes, err := json.Marshal(parcel)
+		createParcelResponse := &createParcelResponse{
+			ID: parcel.ID,
+		}
+
+		marshalledRes, err := json.Marshal(createParcelResponse)
 		if err != nil {
 			log.Printf("failed to marshal the success response: %s", err)
 			http.Error(w, "something went wrong", http.StatusInternalServerError)
+			return
 		}
 
 		fmt.Fprintf(w, string(marshalledRes))
 	}
 }
 
-func validateRequestParam(w http.ResponseWriter, value string, field string) bool {
-	if len(value) == 0 {
-		log.Printf("Bad Request. `%s` request param is empty.", field)
-		badRequestError(w, field, fmt.Sprintf("Bad Request. `%s` field can not be empty.", field))
-		return false
-	}
-
-	if !validateUuidV4(value) {
-		log.Printf("Bad Request. `%s` request param is invalid uuid v4.", field)
-		badRequestError(w, field, fmt.Sprintf("Bad Request. `%s` field is invalid.", field))
-		return false
-	}
-	return true
-}
-
-func badRequestError(w http.ResponseWriter, field string, msg string) {
+func badRequestError(w http.ResponseWriter, msg string) {
 	errResponse := m.Error{
 		Code:    u.I32Ptr(http.StatusBadRequest),
 		Message: u.SPtr(msg),
-		Fields:  u.SPtr(field),
 	}
-	marshalledError, err := json.Marshal(errResponse)
-	if err != nil {
-		unexpectedError(w, err)
-		return
-	}
-	http.Error(w, string(marshalledError), http.StatusBadRequest)
-	return
-}
 
-func notFoundError(w http.ResponseWriter, field string) {
-	errResponse := m.Error{
-		Code:    u.I32Ptr(http.StatusNotFound),
-		Message: u.SPtr(fmt.Sprintf("%s not found", field)),
-		Fields:  u.SPtr(field),
-	}
 	marshalledError, err := json.Marshal(errResponse)
 	if err != nil {
 		unexpectedError(w, err)
 		return
 	}
-	http.Error(w, string(marshalledError), http.StatusNotFound)
+
+	http.Error(w, string(marshalledError), http.StatusBadRequest)
 	return
 }
 
@@ -135,9 +154,4 @@ func databaseError(w http.ResponseWriter, err error) {
 func unexpectedError(w http.ResponseWriter, err error) {
 	log.Printf("failed to marshal the error response: %s", err)
 	http.Error(w, "something went wrong", http.StatusInternalServerError)
-}
-
-func validateUuidV4(text string) bool {
-	r := regexp.MustCompile("^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[8|9|aA|bB][a-f0-9]{3}-[a-f0-9]{12}$")
-	return r.MatchString(text)
 }
