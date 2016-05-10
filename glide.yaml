@@ -11,3 +11,6 @@ import:
 - package: github.com/go-swagger/go-swagger
 - package: github.com/lib/pq
 - package: github.com/jmoiron/sqlx
+- package: github.com/rshetty/multierror
+- package: github.com/rs/cors
+- package: github.com/satori/go.uuid

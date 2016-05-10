@@ -7,6 +7,7 @@ import (
 	"git.mailbox.com/mailbox/config"
 	h "git.mailbox.com/mailbox/handlers"
 	m "git.mailbox.com/mailbox/models"
+	"github.com/rs/cors"
 
 	"github.com/codegangsta/negroni"
 )
@@ -37,6 +38,8 @@ func main() {
 
 	router := h.Router(db)
 	n := negroni.New()
+	//TODO: Too relaxed CORS rules. Make it strict.
+	n.Use(cors.Default())
 	n.UseHandler(router)
 
 	appPort := config.GetServerPort()
