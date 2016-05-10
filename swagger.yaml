@@ -59,32 +59,19 @@ paths:
       tags:
         - Parcel
       parameters:
-        - name: dealer_id
-          in: formData
+        - name: parcel
+          in: body
           description: Dealer of parcel
           required: true
-          type: string
-        - name: owner_id
-          in: formData
-          description: ID of parcel's owner
-          required: true
-          type: string
-        - name: comments
-          in: formData
-          description: Comments regarding received parcel
-          required: true
-          type: string
+          schema:
+            $ref: '#/definitions/ParcelCreate'
       responses:
         200:
-          description: Parcel Created. 
-          schema:
-            $ref: '#/definitions/Parcel'
+          description: Parcel Created.
+          schema: 
+            type: string
         400:
           description: Bad Request
-          schema:
-            $ref: '#/definitions/Error'
-        404:
-          description: Dealer/Owner not found
           schema:
             $ref: '#/definitions/Error'
         default:
@@ -154,24 +141,28 @@ definitions:
         format: uri
   Parcel:
     type: object
-    required: ["id","dealer","owner","status","recieved_date"]
     properties:
       id:
         type: string
       dealer:
-        type: object
         $ref: '#/definitions/Dealer'
       owner:
-        type: object
         $ref: '#/definitions/User'
       reciever:
-        type: object
         $ref: '#/definitions/User'
       status:
         type: boolean
       recieved_date:
         type: string
       pickup_date:
+        type: string
+  ParcelCreate:
+    type: object
+    required: ["dealerId", "ownerId"]
+    properties:
+      dealerId:
+        type: string
+      ownerId:
         type: string
   Error:
     type: object
