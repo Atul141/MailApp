@@ -78,6 +78,28 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /parcels/search:
+    get:
+      summary: An api to search parcel by dealer or owner details
+      tags:
+        - User
+      parameters:
+        - name: q
+          in: query
+          description: search token
+          required: true
+          type: string
+      responses:
+        200:
+          description: An array of parcels
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Parcel'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /parcels/open:
     get:
       summary: Get all parcels with status open
@@ -110,6 +132,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  
 definitions:
   User:
     type: object
