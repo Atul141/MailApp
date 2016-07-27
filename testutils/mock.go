@@ -57,3 +57,19 @@ func (db *MockDB) GetParcelByID(id string) (*m.Parcel, error) {
 	}
 	return nil, args.Error(1)
 }
+
+func (db *MockDB) GetCloseParcels() ([]*m.ParcelWithUserAndDealer, error) {
+	args := db.Called()
+	if args.Get(0) != nil {
+		return args.Get(0).([]*m.ParcelWithUserAndDealer), nil
+	}
+	return nil, args.Error(1)
+}
+
+func (db *MockDB) GetOpenParcels() ([]*m.ParcelWithUserAndDealer, error) {
+	args := db.Called()
+	if args.Get(0) != nil {
+		return args.Get(0).([]*m.ParcelWithUserAndDealer), nil
+	}
+	return nil, args.Error(1)
+}

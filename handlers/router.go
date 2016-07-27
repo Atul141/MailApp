@@ -16,6 +16,7 @@ func Router(db m.DB) http.Handler {
 	r.Handle("/users/search", userSearchHandler(db)).Methods("GET")
 	r.Handle("/dealers", dealersHandler(db)).Methods("GET")
 	r.Handle("/parcels", parcelCreateHandler(db)).Methods("POST")
+	r.Handle("/parcels/{state}", parcelsHandler(db)).Methods("GET")
 
 	return gh.CompressHandler(r)
 }

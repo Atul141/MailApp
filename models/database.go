@@ -10,8 +10,18 @@ import (
 	"time"
 )
 
-const getAllDealersQuery = `select id, name, icon from dealers;`
-const getDealerByIDQuery = `select id, name, icon from dealers WHERE id=$1;`
+const (
+	getAllDealersQuery   = `select id, name, icon from dealers;`
+	getDealerByIDQuery   = `select id, name, icon from dealers WHERE id=$1;`
+	getCloseParcelsQuery = `select p.id, p.dealer_id, p.received_date, p.status, p.owner_id, p.receiver_id,
+ 			     u.email as user_email, u.name as user_name, u.emp_id as user_emp_id, u.phone_no as user_phone_no,
+ 			     d.name as dealer_name, d.icon as dealer_icon
+ 			     from parcels as p, dealers as d,users as u where p.dealer_id = d.id AND p.owner_id = u.id AND p.status = false;`
+	getOpenParcelsQuery = `select p.id, p.dealer_id, p.received_date, p.status, p.owner_id, p.receiver_id,
+ 			     u.email as user_email, u.name as user_name, u.emp_id as user_emp_id, u.phone_no as user_phone_no,
+ 			     d.name as dealer_name, d.icon as dealer_icon
+ 			     from parcels as p, dealers as d,users as u where p.dealer_id = d.id AND p.owner_id = u.id AND p.status = false;`
+)
 
 type DB interface {
 	GetDealers() ([]*Dealer, error)
@@ -20,6 +30,8 @@ type DB interface {
 	GetDealerByID(id string) (*Dealer, error)
 	GetParcelByID(id string) (*Parcel, error)
 	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
+	GetCloseParcels() ([]*ParcelWithUserAndDealer, error)
+	GetOpenParcels() ([]*ParcelWithUserAndDealer, error)
 }
 
 type Database struct {
@@ -109,4 +121,21 @@ func (db *Database) CreateParcel(dealerID string, ownerID string) (*Parcel, erro
 		return nil, fmt.Errorf("Error inserting record: %s", err)
 	}
 	return db.GetParcelByID(id)
+}
+
+func (db *Database) GetCloseParcels() ([]*ParcelWithUserAndDealer, error) {
+	var dealers []*ParcelWithUserAndDealer
+	err := db.connection.Select(&dealers, getCloseParcelsQuery)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
+	}
+	return dealers, err
+}
+func (db *Database) GetOpenParcels() ([]*ParcelWithUserAndDealer, error) {
+	var dealers []*ParcelWithUserAndDealer
+	err := db.connection.Select(&dealers, getOpenParcelsQuery)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
+	}
+	return dealers, err
 }

@@ -38,7 +38,7 @@ var parcel = &m.Parcel{
 }
 
 func TestParcelCreateSuccess(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels",
+	r, err := http.NewRequest("POST", "/parcels",
 		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
@@ -56,7 +56,7 @@ func TestParcelCreateSuccess(t *testing.T) {
 }
 
 func TestParcelCreateWhenNoRequestBody(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels", nil)
+	r, err := http.NewRequest("POST", "/parcels", nil)
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
 
@@ -71,7 +71,7 @@ func TestParcelCreateWhenNoRequestBody(t *testing.T) {
 }
 
 func TestParcelCreateMalformedRequest(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels", strings.NewReader(`malformed json`))
+	r, err := http.NewRequest("POST", "/parcels", strings.NewReader(`malformed json`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
 
@@ -86,7 +86,7 @@ func TestParcelCreateMalformedRequest(t *testing.T) {
 }
 
 func TestParcelCreateValidationFail(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels", strings.NewReader(`{ }`))
+	r, err := http.NewRequest("POST", "/parcels", strings.NewReader(`{ }`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
 
@@ -104,7 +104,7 @@ func TestParcelCreateValidationFail(t *testing.T) {
 }
 
 func TestParcelCreateGetDealerFail(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels",
+	r, err := http.NewRequest("POST", "/parcels",
 		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
@@ -120,7 +120,7 @@ func TestParcelCreateGetDealerFail(t *testing.T) {
 }
 
 func TestParcelCreateGetUserFail(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels",
+	r, err := http.NewRequest("POST", "/parcels",
 		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
@@ -136,7 +136,7 @@ func TestParcelCreateGetUserFail(t *testing.T) {
 }
 
 func TestParcelCreateFail(t *testing.T) {
-	r, err := http.NewRequest("GET", "/parcels",
+	r, err := http.NewRequest("POST", "/parcels",
 		strings.NewReader(`{ "dealerId": "a8f4e46c-8295-4f53-ab0a-7fc2d2f47d28", "ownerId": "23abce0a-ceb7-4127-8d98-b0bb5df4cce7" }`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
