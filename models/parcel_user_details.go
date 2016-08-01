@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type ParcelWithUserAndDealer struct {
+type ParcelUserDetails struct {
 	/* registration no
 
 	Required: true

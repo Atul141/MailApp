@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var parcelWithUserAndDealer = []*m.ParcelWithUserAndDealer{
-	&m.ParcelWithUserAndDealer{
+var parcelWithUserAndDealer = []*m.ParcelUserDetails{
+	&m.ParcelUserDetails{
 		ID:          "ada1103c-4024-4ea4-b955-58c1c2c702b7",
 		UserName:    u.SPtr("foobar"),
 		Status:      false,
@@ -43,7 +43,7 @@ func TestParcelsHandlerForClosedParcelsSuccess(t *testing.T) {
 
 	parcelsHandler(mockDbObj)(w, r)
 
-	var actualParcel []*m.ParcelWithUserAndDealer
+	var actualParcel []*m.ParcelUserDetails
 	err = json.Unmarshal(w.Body.Bytes(), &actualParcel)
 	require.NoError(t, err, "failed to unmarshal the response")
 
@@ -70,7 +70,7 @@ func TestParcelsHandlerForOpenParcelsSuccess(t *testing.T) {
 
 	parcelsHandler(mockDbObj)(w, r)
 
-	var actualParcel []*m.ParcelWithUserAndDealer
+	var actualParcel []*m.ParcelUserDetails
 	err = json.Unmarshal(w.Body.Bytes(), &actualParcel)
 	require.NoError(t, err, "failed to unmarshal the response")
 

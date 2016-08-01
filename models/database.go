@@ -20,7 +20,7 @@ const (
 	getOpenParcelsQuery = `select p.id, p.dealer_id, p.received_date, p.status, p.owner_id, p.receiver_id,
  			     u.email as user_email, u.name as user_name, u.emp_id as user_emp_id, u.phone_no as user_phone_no,
  			     d.name as dealer_name, d.icon as dealer_icon
- 			     from parcels as p, dealers as d,users as u where p.dealer_id = d.id AND p.owner_id = u.id AND p.status = false;`
+ 			     from parcels as p, dealers as d,users as u where p.dealer_id = d.id AND p.owner_id = u.id AND p.status = true;`
 )
 
 type DB interface {
@@ -30,8 +30,8 @@ type DB interface {
 	GetDealerByID(id string) (*Dealer, error)
 	GetParcelByID(id string) (*Parcel, error)
 	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
-	GetCloseParcels() ([]*ParcelWithUserAndDealer, error)
-	GetOpenParcels() ([]*ParcelWithUserAndDealer, error)
+	GetCloseParcels() ([]*ParcelUserDetails, error)
+	GetOpenParcels() ([]*ParcelUserDetails, error)
 }
 
 type Database struct {
@@ -123,19 +123,20 @@ func (db *Database) CreateParcel(dealerID string, ownerID string) (*Parcel, erro
 	return db.GetParcelByID(id)
 }
 
-func (db *Database) GetCloseParcels() ([]*ParcelWithUserAndDealer, error) {
-	var dealers []*ParcelWithUserAndDealer
-	err := db.connection.Select(&dealers, getCloseParcelsQuery)
+func (db *Database) GetCloseParcels() ([]*ParcelUserDetails, error) {
+	var parcelDetails []*ParcelUserDetails
+	err := db.connection.Select(&parcelDetails, getCloseParcelsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
 	}
-	return dealers, err
+	return parcelDetails, err
 }
-func (db *Database) GetOpenParcels() ([]*ParcelWithUserAndDealer, error) {
-	var dealers []*ParcelWithUserAndDealer
-	err := db.connection.Select(&dealers, getOpenParcelsQuery)
+
+func (db *Database) GetOpenParcels() ([]*ParcelUserDetails, error) {
+	var parcelDetails []*ParcelUserDetails
+	err := db.connection.Select(&parcelDetails, getOpenParcelsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
 	}
-	return dealers, err
+	return parcelDetails, err
 }

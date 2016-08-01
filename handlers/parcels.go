@@ -10,14 +10,20 @@ import (
 	"strings"
 )
 
+const (
+	closed = "close"
+	open   = "open"
+)
+
 func parcelsHandler(db m.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var parcels []*m.ParcelWithUserAndDealer
+		var parcels []*m.ParcelUserDetails
 		var err error
 		status := strings.Split(r.URL.Path, "/")[2]
-		if status == "close" {
+
+		if status == closed {
 			parcels, err = db.GetCloseParcels()
-		} else if status == "open" {
+		} else if status == open {
 			parcels, err = db.GetOpenParcels()
 		}
 
