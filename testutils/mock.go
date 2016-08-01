@@ -170,3 +170,19 @@ func (_m *MockDB) GetUsersWith(_a0 string) ([]*models.User, error) {
 
 	return r0, r1
 }
+
+func (db *MockDB) GetCloseParcels() ([]*m.ParcelUserDetails, error) {
+	args := db.Called()
+	if args.Get(0) != nil {
+		return args.Get(0).([]*m.ParcelUserDetails), nil
+	}
+	return nil, args.Error(1)
+}
+
+func (db *MockDB) GetOpenParcels() ([]*m.ParcelUserDetails, error) {
+	args := db.Called()
+	if args.Get(0) != nil {
+		return args.Get(0).([]*m.ParcelUserDetails), nil
+	}
+	return nil, args.Error(1)
+}
