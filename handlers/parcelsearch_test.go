@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -108,4 +109,28 @@ func TestParcelSearchSuccessWhenLessThan3QueryParam(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, 0, len(actualParcels))
+}
+
+func TestParcelSearchDBFailure(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=mello", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetParcelsWith", "mello").Return(nil, fmt.Errorf("failure to connect to db"))
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualError *m.Error
+	err = json.Unmarshal(w.Body.Bytes(), &actualError)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	require.NotNil(t, actualError)
+
+	assert.Equal(t, int32(500), *actualError.Code)
+	assert.Equal(t, "Internal server error", *actualError.Message)
+
+	require.Nil(t, actualError.Fields)
+
+	mockDbObj.AssertExpectations(t)
 }
