@@ -75,3 +75,37 @@ func TestParcelSearchSuccess(t *testing.T) {
 
 	mockDbObj.AssertExpectations(t)
 }
+
+func TestParcelSearchSuccessNoQueryParam(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualParcels []*m.Parcel
+	err = json.Unmarshal(w.Body.Bytes(), &actualParcels)
+	require.NoError(t, err, "failed to unmarshal the response")
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, 0, len(actualParcels))
+}
+
+func TestParcelSearchSuccessWhenLessThan3QueryParam(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=li", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualParcels []*m.User
+	err = json.Unmarshal(w.Body.Bytes(), &actualParcels)
+	require.NoError(t, err, "failed to unmarshal the response")
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, 0, len(actualParcels))
+}
