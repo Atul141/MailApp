@@ -109,7 +109,7 @@ func (db *Database) GetParcelsWith(searchParam string) ([]*Parcel, error) {
 				o.name ~*$1 or o.email ~*$1 or o.phone_no ~* $1 or o.emp_id ~*$1;`
 	err := db.connection.Select(&parcels, query, searchParam)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch users: %s", err)
+		return nil, fmt.Errorf("failed to fetch parcels: %s", err)
 	}
 	return parcels, err
 }
