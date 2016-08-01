@@ -134,3 +134,81 @@ func TestParcelSearchDBFailure(t *testing.T) {
 
 	mockDbObj.AssertExpectations(t)
 }
+
+func TestParcelSearchDealerGetFailure(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=mello", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetParcelsWith", "mello").Return(parcels, nil)
+	mockDbObj.On("GetDealerByID", "bda1103c-4024-4ea4-b955-58c1c2c702b7").Return(nil, fmt.Errorf("failed to get the owner"))
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualError *m.Error
+	err = json.Unmarshal(w.Body.Bytes(), &actualError)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	require.NotNil(t, actualError)
+
+	assert.Equal(t, int32(500), *actualError.Code)
+	assert.Equal(t, "Internal server error", *actualError.Message)
+
+	require.Nil(t, actualError.Fields)
+
+	mockDbObj.AssertExpectations(t)
+}
+
+func TestParcelSearchOwnerGetFailure(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=mello", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetParcelsWith", "mello").Return(parcels, nil)
+	mockDbObj.On("GetDealerByID", "bda1103c-4024-4ea4-b955-58c1c2c702b7").Return(dealerParcelSearch, nil)
+	mockDbObj.On("GetUserByID", "cda1103c-4024-4ea4-b955-58c1c2c702b7").Return(nil, fmt.Errorf("failed to get the owner"))
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualError *m.Error
+	err = json.Unmarshal(w.Body.Bytes(), &actualError)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	require.NotNil(t, actualError)
+
+	assert.Equal(t, int32(500), *actualError.Code)
+	assert.Equal(t, "Internal server error", *actualError.Message)
+
+	require.Nil(t, actualError.Fields)
+
+	mockDbObj.AssertExpectations(t)
+}
+
+func TestParcelSearchReceiverGetFailure(t *testing.T) {
+	r, err := http.NewRequest("GET", "/parcels/search?q=mello", nil)
+	require.NoError(t, err, "failed to create a request: dealers")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("GetParcelsWith", "mello").Return(parcels, nil)
+	mockDbObj.On("GetDealerByID", "bda1103c-4024-4ea4-b955-58c1c2c702b7").Return(dealerParcelSearch, nil)
+	mockDbObj.On("GetUserByID", "cda1103c-4024-4ea4-b955-58c1c2c702b7").Return(ownerParcelSearch, nil)
+	mockDbObj.On("GetUserByID", "dda1103c-4024-4ea4-b955-58c1c2c702b7").Return(nil, fmt.Errorf("failed to get the owner"))
+
+	parcelSearchHandler(mockDbObj)(w, r)
+
+	var actualError *m.Error
+	err = json.Unmarshal(w.Body.Bytes(), &actualError)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	require.NotNil(t, actualError)
+
+	assert.Equal(t, int32(500), *actualError.Code)
+	assert.Equal(t, "Internal server error", *actualError.Message)
+
+	require.Nil(t, actualError.Fields)
+
+	mockDbObj.AssertExpectations(t)
+}
