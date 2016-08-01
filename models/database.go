@@ -29,6 +29,7 @@ type DB interface {
 	GetUserByID(string) (*User, error)
 	GetDealerByID(id string) (*Dealer, error)
 	GetParcelByID(id string) (*Parcel, error)
+	GetParcelsWith(searchParam string) ([]*Parcel, error)
 	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
 	GetCloseParcels() ([]*ParcelUserDetails, error)
 	GetOpenParcels() ([]*ParcelUserDetails, error)
@@ -97,6 +98,20 @@ func (db *Database) GetParcelByID(id string) (*Parcel, error) {
 		return nil, fmt.Errorf("failed to fetch parcel: %s", err)
 	}
 	return &parcel, err
+}
+
+func (db *Database) GetParcelsWith(searchParam string) ([]*Parcel, error) {
+	var parcels []*Parcel
+	query := `SELECT p.id, p.dealer_id, p.received_date, p.status, p.owner_id, p.receiver_id FROM parcels p
+				inner join dealers d on d.id = p.dealer_id
+				inner join users o on o.id = p.owner_id
+				where d.name ~*$1 or
+				o.name ~*$1 or o.email ~*$1 or o.phone_no ~* $1 or o.emp_id ~*$1;`
+	err := db.connection.Select(&parcels, query, searchParam)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch parcels: %s", err)
+	}
+	return parcels, err
 }
 
 func (db *Database) CreateParcel(dealerID string, ownerID string) (*Parcel, error) {
