@@ -143,3 +143,4 @@ func (m *Parcel) validateStatus(formats strfmt.Registry) error {
 
 	return nil
 }
+

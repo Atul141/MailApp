@@ -18,6 +18,7 @@ func Router(db m.DB) http.Handler {
 	r.Handle("/parcels", parcelCreateHandler(db)).Methods("POST")
 	r.Handle("/parcels/search", parcelSearchHandler(db)).Methods("GET")
 	r.Handle("/parcels/{state}", parcelsHandler(db)).Methods("GET")
+	r.Handle("/parcels/{id}", updateParcelHandler(db)).Methods("PATCH")
 
 	return gh.CompressHandler(r)
 }

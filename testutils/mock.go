@@ -188,3 +188,7 @@ func (db *MockDB) GetOpenParcels() ([]*m.ParcelUserDetails, error) {
 	}
 	return nil, args.Error(1)
 }
+
+func (db *MockDB)UpdateParcelStatusById(parcelId string, status bool) error{
+	return nil
+}
