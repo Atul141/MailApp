@@ -40,8 +40,8 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 		err = db.UpdateParcelStatusById(parcelId,upr.Status)
 
 		if err != nil {
-			log.Printf("failed to update parcels: %s", err)
-			http.Error(w, "failed to update status", http.StatusBadRequest)
+			log.Printf("Failed to update parcel: %s", err)
+			databaseError(w, err)
 			return
 		}
 
