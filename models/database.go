@@ -33,7 +33,7 @@ type DB interface {
 	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
 	GetCloseParcels() ([]*ParcelUserDetails, error)
 	GetOpenParcels() ([]*ParcelUserDetails, error)
-	UpdateParcelStatusById(parcelId string, status bool) error
+	UpdateParcelStatusById(parcelId string, status string) error
 }
 
 type Database struct {
@@ -157,17 +157,14 @@ func (db *Database) GetOpenParcels() ([]*ParcelUserDetails, error) {
 	return parcelDetails, err
 }
 
-func (db *Database)UpdateParcelStatusById(parcelId string, status bool) error{
-	//parcel,err := db.GetParcelByID(parcelId)
-	//if err != nil {
-	//	log.Printf("failed to get parcel by Id : %s", err)
-	//	return err
-	//}
-	//
-	//if(parcel.Status != status){
-	//	query := "UPDATE parcels SET status=$1 WHERE id = $2;"
-	//}
+func (db *Database)UpdateParcelStatusById(parcelId string, status string) error{
+	var boolStatus string
+	if status == "close"{
+		boolStatus = "FALSE"
+	}else if status == "open"{
+		boolStatus = "TRUE"
+	}
 	query := "UPDATE parcels SET status=$1 WHERE id = $2;"
-	_,err := db.connection.Exec(query, status, parcelId)
+	_,err := db.connection.Exec(query, boolStatus, parcelId)
 	return err
 }

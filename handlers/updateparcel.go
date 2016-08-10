@@ -10,7 +10,7 @@ import (
 )
 
 type updateParcelRequest struct {
-	Status bool `json:"status"`
+	Status string `json:"status"`
 }
 
 func updateParcelHandler(db m.DB) http.HandlerFunc {

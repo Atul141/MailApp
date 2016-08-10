@@ -14,12 +14,12 @@ import (
 
 func TestParcelUpdateSuccess(t *testing.T) {
 	r, err := http.NewRequest("PATCH", "/parcels/23",
-		strings.NewReader(`{"status":false}`))
+		strings.NewReader(`{"status":"close"}`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
 
 	mockDbObj := new(tu.MockDB)
-	mockDbObj.On("UpdateParcelStatusById", "23", false).Return(nil)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
 
 	updateParcelHandler(mockDbObj)(w, r)
 
@@ -32,7 +32,7 @@ func TestParcelUpdateFailedForNoRequest(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	mockDbObj := new(tu.MockDB)
-	mockDbObj.On("UpdateParcelStatusById", "23", false).Return(nil)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
 
 	updateParcelHandler(mockDbObj)(w, r)
 
@@ -46,7 +46,7 @@ func TestParcelUpdateFailedForEmptyRequestBody(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	mockDbObj := new(tu.MockDB)
-	mockDbObj.On("UpdateParcelStatusById", "23", false).Return(nil)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
 
 	updateParcelHandler(mockDbObj)(w, r)
 
@@ -61,7 +61,7 @@ func TestParcelUpdateFailedForMalformedJsonRequest(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	mockDbObj := new(tu.MockDB)
-	mockDbObj.On("UpdateParcelStatusById", "23", false).Return(nil)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
 
 	updateParcelHandler(mockDbObj)(w, r)
 
@@ -71,12 +71,12 @@ func TestParcelUpdateFailedForMalformedJsonRequest(t *testing.T) {
 
 func TestParcelUpdationFailed(t *testing.T) {
 	r, err := http.NewRequest("PATCH", "/parcels/23",
-		strings.NewReader(`{"status":false}`))
+		strings.NewReader(`{"status":"close"}`))
 	require.NoError(t, err, "failed to create a request")
 	w := httptest.NewRecorder()
 
 	mockDbObj := new(tu.MockDB)
-	mockDbObj.On("UpdateParcelStatusById", "23", false).Return(fmt.Errorf("Failed to update the parcel"))
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(fmt.Errorf("Failed to update the parcel"))
 
 	updateParcelHandler(mockDbObj)(w, r)
 
