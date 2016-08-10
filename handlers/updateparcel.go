@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	m "git.mailbox.com/mailbox/models"
+	me "github.com/rshetty/multierror"
 	"log"
 	"net/http"
 	"io/ioutil"
@@ -11,6 +12,18 @@ import (
 
 type updateParcelRequest struct {
 	Status string `json:"status"`
+}
+
+func (upr *updateParcelRequest) Validate() *me.MultiError {
+	uprError := &me.MultiError{}
+	if len(upr.Status) == 0 {
+		uprError.Push("status should not be empty")
+	}
+	if !(upr.Status == "open" || upr.Status == "close"){
+		uprError.Push("parcel status should be either 'open' or 'close'")
+	}
+
+	return uprError.HasError()
 }
 
 func updateParcelHandler(db m.DB) http.HandlerFunc {
@@ -36,6 +49,12 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 			return
 		}
 
+		if err := upr.Validate(); err != nil {
+			log.Printf("Error fetching dealer from DB: %s", err.Error())
+			badRequestError(w, err.Error())
+			return
+		}
+
 		parcelId := strings.Split(r.URL.Path, "/")[2]
 
 		err = db.UpdateParcelStatusById(parcelId,upr.Status)
@@ -49,4 +68,3 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 	}
 }
-

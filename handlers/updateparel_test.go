@@ -69,6 +69,41 @@ func TestParcelUpdateFailedForMalformedJsonRequest(t *testing.T) {
 	assert.Equal(t, w.Body.String(), "request body parsing failed\n")
 }
 
+func TestParcelUpdateFailedForRequestValidationWithEmptyStatus(t *testing.T) {
+	r, err := http.NewRequest("PATCH", "/parcels/23",
+		strings.NewReader(`{"status":""}`))
+	require.NoError(t, err, "failed to create a request")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
+
+	updateParcelHandler(mockDbObj)(w, r)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	validationFailMessage := fmt.Sprintf(`{"code":%d,"message":"status should not be empty\nparcel status should be either 'open' or 'close'"}`, w.Code)
+	assert.Equal(t, fmt.Sprintf("%s\n", validationFailMessage), w.Body.String())
+}
+
+func TestParcelUpdateFailedForRequestValidationWithIncorrectStatus(t *testing.T) {
+	r, err := http.NewRequest("PATCH", "/parcels/23",
+		strings.NewReader(`{"status":"c"}`))
+	require.NoError(t, err, "failed to create a request")
+	w := httptest.NewRecorder()
+
+	mockDbObj := new(tu.MockDB)
+	mockDbObj.On("UpdateParcelStatusById", "23", "close").Return(nil)
+
+	updateParcelHandler(mockDbObj)(w, r)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	validationFailMessage := fmt.Sprintf(`{"code":%d,"message":"parcel status should be either 'open' or 'close'"}`, w.Code)
+	assert.Equal(t, fmt.Sprintf("%s\n", validationFailMessage), w.Body.String())
+}
+
+
 func TestParcelUpdationFailed(t *testing.T) {
 	r, err := http.NewRequest("PATCH", "/parcels/23",
 		strings.NewReader(`{"status":"close"}`))
