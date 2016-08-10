@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"strings"
-	"fmt"
 )
 
 type updateParcelRequest struct {
@@ -22,7 +21,7 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 			return
 		}
 
-		respBody, err := ioutil.ReadAll(r.Body)
+		reqBody, err := ioutil.ReadAll(r.Body)
 
 		if err != nil {
 			log.Printf("failed to read the request body: %s", err)
@@ -30,8 +29,7 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 			return
 		}
 		upr := &updateParcelRequest{}
-		err = json.Unmarshal(respBody, upr)
-		fmt.Println(err,"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+		err = json.Unmarshal(reqBody, upr)
 		if err != nil {
 			log.Printf("failed to unmarshal the request body: %s", err)
 			http.Error(w, "request body parsing failed", http.StatusBadRequest)
