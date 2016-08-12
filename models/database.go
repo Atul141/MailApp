@@ -33,6 +33,7 @@ type DB interface {
 	CreateParcel(dealerID string, ownerID string) (*Parcel, error)
 	GetCloseParcels() ([]*ParcelUserDetails, error)
 	GetOpenParcels() ([]*ParcelUserDetails, error)
+	UpdateParcelStatusById(parcelId string, status string) error
 }
 
 type Database struct {
@@ -154,4 +155,16 @@ func (db *Database) GetOpenParcels() ([]*ParcelUserDetails, error) {
 		return nil, fmt.Errorf("failed to fetch dealers: %s", err)
 	}
 	return parcelDetails, err
+}
+
+func (db *Database)UpdateParcelStatusById(parcelId string, status string) error{
+	var parcelStatus string
+	if status == "close"{
+		parcelStatus = "FALSE"
+	}else if status == "open"{
+		parcelStatus = "TRUE"
+	}
+	query := "UPDATE parcels SET status=$1 WHERE id = $2;"
+	_,err := db.connection.Exec(query, parcelStatus, parcelId)
+	return err
 }
