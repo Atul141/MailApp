@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	m "git.mailbox.com/mailbox/models"
 	me "github.com/rshetty/multierror"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
 	"strings"
 )
 
@@ -19,7 +19,7 @@ func (upr *updateParcelRequest) Validate() *me.MultiError {
 	if len(upr.Status) == 0 {
 		uprError.Push("status should not be empty")
 	}
-	if !(upr.Status == "open" || upr.Status == "close"){
+	if !(upr.Status == "open" || upr.Status == "close") {
 		uprError.Push("parcel status should be either 'open' or 'close'")
 	}
 
@@ -57,7 +57,7 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 
 		parcelId := strings.Split(r.URL.Path, "/")[2]
 
-		err = db.UpdateParcelStatusById(parcelId,upr.Status)
+		err = db.UpdateParcelStatusById(parcelId, upr.Status)
 
 		if err != nil {
 			log.Printf("Failed to update parcel: %s", err)

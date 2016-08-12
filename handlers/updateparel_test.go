@@ -1,16 +1,15 @@
 package handlers
 
 import (
+	"fmt"
+	tu "git.mailbox.com/mailbox/testutils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	tu "git.mailbox.com/mailbox/testutils"
-	"fmt"
 )
-
 
 func TestParcelUpdateSuccess(t *testing.T) {
 	r, err := http.NewRequest("PATCH", "/parcels/23",
@@ -102,7 +101,6 @@ func TestParcelUpdateFailedForRequestValidationWithIncorrectStatus(t *testing.T)
 	validationFailMessage := fmt.Sprintf(`{"code":%d,"message":"parcel status should be either 'open' or 'close'"}`, w.Code)
 	assert.Equal(t, fmt.Sprintf("%s\n", validationFailMessage), w.Body.String())
 }
-
 
 func TestParcelUpdationFailed(t *testing.T) {
 	r, err := http.NewRequest("PATCH", "/parcels/23",

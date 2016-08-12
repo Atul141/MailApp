@@ -157,14 +157,14 @@ func (db *Database) GetOpenParcels() ([]*ParcelUserDetails, error) {
 	return parcelDetails, err
 }
 
-func (db *Database)UpdateParcelStatusById(parcelId string, status string) error{
+func (db *Database) UpdateParcelStatusById(parcelId string, status string) error {
 	var parcelStatus string
-	if status == "close"{
+	if status == "close" {
 		parcelStatus = "FALSE"
-	}else if status == "open"{
+	} else if status == "open" {
 		parcelStatus = "TRUE"
 	}
 	query := "UPDATE parcels SET status=$1 WHERE id = $2;"
-	_,err := db.connection.Exec(query, parcelStatus, parcelId)
+	_, err := db.connection.Exec(query, parcelStatus, parcelId)
 	return err
 }
