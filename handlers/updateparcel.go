@@ -35,12 +35,12 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 		}
 
 		reqBody, err := ioutil.ReadAll(r.Body)
-
 		if err != nil {
 			log.Printf("failed to read the request body: %s", err)
 			http.Error(w, "request body error", http.StatusBadRequest)
 			return
 		}
+
 		upr := &updateParcelRequest{}
 		err = json.Unmarshal(reqBody, upr)
 		if err != nil {
@@ -58,7 +58,6 @@ func updateParcelHandler(db m.DB) http.HandlerFunc {
 		parcelId := strings.Split(r.URL.Path, "/")[2]
 
 		err = db.UpdateParcelStatusById(parcelId, upr.Status)
-
 		if err != nil {
 			log.Printf("Failed to update parcel: %s", err)
 			databaseError(w, err)

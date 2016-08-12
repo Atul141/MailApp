@@ -23,6 +23,11 @@ const (
  			     from parcels as p, dealers as d,users as u where p.dealer_id = d.id AND p.owner_id = u.id AND p.status = true;`
 )
 
+var parcelStatus map[string]bool = map[string]bool{
+	"closed": false,
+	"open":   true,
+}
+
 type DB interface {
 	GetDealers() ([]*Dealer, error)
 	GetUsersWith(string) ([]*User, error)
@@ -158,13 +163,8 @@ func (db *Database) GetOpenParcels() ([]*ParcelUserDetails, error) {
 }
 
 func (db *Database) UpdateParcelStatusById(parcelId string, status string) error {
-	var parcelStatus string
-	if status == "close" {
-		parcelStatus = "FALSE"
-	} else if status == "open" {
-		parcelStatus = "TRUE"
-	}
 	query := "UPDATE parcels SET status=$1 WHERE id = $2;"
-	_, err := db.connection.Exec(query, parcelStatus, parcelId)
+
+	_, err := db.connection.Exec(query, parcelStatus[status], parcelId)
 	return err
 }
